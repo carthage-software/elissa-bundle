@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Psr\Http\Message\RequestFactoryInterface" class="Laminas\Diactoros\RequestFactory" />
+        <service id="Psr\Http\Message\ResponseFactoryInterface" class="Laminas\Diactoros\ResponseFactory" />
+        <service id="Psr\Http\Message\ServerRequestFactoryInterface" class="Laminas\Diactoros\ServerRequestFactory" />
+        <service id="Psr\Http\Message\StreamFactoryInterface" class="Laminas\Diactoros\StreamFactory" />
+        <service id="Psr\Http\Message\UploadedFileFactoryInterface" class="Laminas\Diactoros\UploadedFileFactory" />
+        <service id="Psr\Http\Message\UriFactoryInterface" class="Laminas\Diactoros\UriFactory" />
+
+        <service id="Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface" class="Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory">
+            <argument type="service" id="Psr\Http\Message\ServerRequestFactoryInterface"/>
+            <argument type="service" id="Psr\Http\Message\StreamFactoryInterface"/>
+            <argument type="service" id="Psr\Http\Message\UploadedFileFactoryInterface"/>
+            <argument type="service" id="Psr\Http\Message\ResponseFactoryInterface"/>
+        </service>
+
+        <service id="Symfony\Bridge\PsrHttpMessage\EventListener\PsrResponseListener">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Symfony\Bridge\PsrHttpMessage\ArgumentValueResolver\PsrServerRequestResolver">
+            <argument type="service" id="Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface"/>
+
+            <tag name="controller.argument_value_resolver"/>
+        </service>
+
+        <service id="Carthage\ElissaBundle\EventListener\ControllerEventListener">
+            <argument type="tagged_iterator" tag="elissa.middleware" />
+
+            <tag name="kernel.event_listener" event="kernel.controller" method="__invoke" />
+        </service>
+
+        <instanceof id="Psr\Http\Server\RequestHandlerInterface">
+            <tag name="controller.service_arguments" />
+        </instanceof>
+
+        <instanceof id="Psr\Http\Server\MiddlewareInterface">
+            <tag name="elissa.middleware" />
+        </instanceof>
+    </services>
+</container>
