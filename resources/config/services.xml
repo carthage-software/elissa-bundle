@@ -34,13 +34,5 @@
 
             <tag name="kernel.event_listener" event="kernel.controller" method="__invoke" />
         </service>
-
-        <instanceof id="Psr\Http\Server\RequestHandlerInterface">
-            <tag name="controller.service_arguments" />
-        </instanceof>
-
-        <instanceof id="Psr\Http\Server\MiddlewareInterface">
-            <tag name="elissa.middleware" />
-        </instanceof>
     </services>
 </container>
